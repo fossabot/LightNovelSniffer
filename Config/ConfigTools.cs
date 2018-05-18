@@ -5,6 +5,7 @@ using System.Xml;
 using System.Globalization;
 using System.Resources;
 using System.util;
+using iText.IO.Log;
 using LightNovelSniffer.Exception;
 using LightNovelSniffer.Resources;
 
@@ -161,6 +162,7 @@ namespace LightNovelSniffer.Config
 
         public static void InitConf(CultureInfo language = null)
         {
+            LoggerFactory.BindFactory(new NoOpLoggerFactory());
             if (language != null)
                 SetLanguage(language);
 
