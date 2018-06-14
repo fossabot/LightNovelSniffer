@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Xml;
 using System.Globalization;
+using System.IO;
 using System.Resources;
 using System.util;
 using iText.IO.Log;
@@ -26,7 +27,7 @@ namespace LightNovelSniffer.Config
                 try
                 {
                     ResourceSet rs = rm.GetResourceSet(culture, true, false);
-                    if (rs!=null)
+                    if (rs != null)
                         res.Add(culture);
                 }
                 catch (CultureNotFoundException)
@@ -59,7 +60,8 @@ namespace LightNovelSniffer.Config
             }
             catch (CultureNotFoundException)
             {
-                throw new LanguageException(string.Format(LightNovelSniffer_Strings.GetCultureFromLanguageExceptionMessage, language));
+                throw new LanguageException(
+                    string.Format(LightNovelSniffer_Strings.GetCultureFromLanguageExceptionMessage, language));
             }
         }
 
@@ -74,25 +76,34 @@ namespace LightNovelSniffer.Config
             }
             catch (System.Exception)
             {
-                throw new LanguageException(string.Format(LightNovelSniffer_Strings.CultureInfoExceptionMessage, language));
+                throw new LanguageException(string.Format(LightNovelSniffer_Strings.CultureInfoExceptionMessage,
+                    language));
             }
         }
 
-        public static void InitLightNovels(CultureInfo language = null)
+        public static void InitLightNovels(string lnFileName, bool resetLnListBeforeInit = false, CultureInfo language = null)
         {
             if (language != null)
                 SetLanguage(language);
 
-            string path = System.IO.Path.GetDirectoryName(
+            string path = Path.GetDirectoryName(
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
+            if (resetLnListBeforeInit || Globale.LN_TO_RETRIEVE == null)
+                Globale.LN_TO_RETRIEVE = new List<LnParameters>();
+
+            InitLightNovelsFromFile(path + "\\" + lnFileName);
+        }
+
+        private static void InitLightNovelsFromFile(string file)
+        {
             XmlDocument lnXml = new XmlDocument();
-            lnXml.Load(path + "\\LightNovels.xml");
+            lnXml.Load(file);
 
             if (lnXml.DocumentElement == null)
-                throw new ApplicationException(LightNovelSniffer_Strings.UnableToReadLightNovelsFileExceptionMessage);
-
-            Globale.LN_TO_RETRIEVE = new List<LnParameters>();
+                throw new ApplicationException(
+                    string.Format(LightNovelSniffer_Strings.UnableToReadLightNovelsFileExceptionMessage,
+                        Path.GetFileName(file)));
 
             XmlNodeList lnNodes = lnXml.DocumentElement.SelectNodes("ln");
             if (lnNodes != null)
@@ -160,27 +171,35 @@ namespace LightNovelSniffer.Config
             }
         }
 
-        public static void InitConf(CultureInfo language = null)
+        public static void InitConf(string confFileName, CultureInfo language = null)
         {
             LoggerFactory.BindFactory(new NoOpLoggerFactory());
             if (language != null)
                 SetLanguage(language);
 
-            string path = System.IO.Path.GetDirectoryName(
+            string path = Path.GetDirectoryName(
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
+            InitConfFromFile(path + "\\" + confFileName);
+        }
+
+        private static void InitConfFromFile(string file)
+        {
             XmlDocument configXml = new XmlDocument();
-            configXml.Load(path + "\\Config.xml");
+            configXml.Load(file);
 
             if (configXml.DocumentElement == null)
-                throw new ApplicationException(LightNovelSniffer_Strings.UnableToReadConfigFileExceptionMessage);
+                throw new ApplicationException(
+                    string.Format(LightNovelSniffer_Strings.UnableToReadConfigFileExceptionMessage,
+                        Path.GetFileName(file)));
 
             XmlNode ofNode = configXml.DocumentElement.SelectSingleNode("outputFolder");
             XmlNode imNode = configXml.DocumentElement.SelectSingleNode("interactiveMode");
             XmlNode publisherNode = configXml.DocumentElement.SelectSingleNode("publisher");
             XmlNode dctNode = configXml.DocumentElement.SelectSingleNode("defaultChapterTitle");
-            XmlNode maxNotExistingChapterBeforeStop = configXml.DocumentElement.SelectSingleNode("maxNotExistingChapterBeforeStop");
-            
+            XmlNode maxChapterOnErrorCountBeforeStop =
+                configXml.DocumentElement.SelectSingleNode("maxChapterOnErrorCountBeforeStop");
+
             if (ofNode != null)
                 Globale.OUTPUT_FOLDER = ofNode.InnerText;
 
@@ -196,10 +215,12 @@ namespace LightNovelSniffer.Config
             if (dctNode != null)
                 Globale.DEFAULT_CHAPTER_TITLE = dctNode.InnerText;
 
-            if (maxNotExistingChapterBeforeStop != null)
+            if (maxChapterOnErrorCountBeforeStop != null)
             {
-                if (!int.TryParse(maxNotExistingChapterBeforeStop.InnerText, out Globale.MAX_NOT_EXISTING_CHAPTER_BEFORE_STOP))
-                    Globale.MAX_NOT_EXISTING_CHAPTER_BEFORE_STOP = 0;
+                if (
+                    !int.TryParse(maxChapterOnErrorCountBeforeStop.InnerText,
+                        out Globale.MAX_CHAPTER_ON_ERROR_COUNT_BEFORE_STOP))
+                    Globale.MAX_CHAPTER_ON_ERROR_COUNT_BEFORE_STOP = 0;
             }
         }
     }

@@ -151,6 +151,15 @@ namespace LightNovelSniffer.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parser failed to process chapter {0}. Do you want to try the following one ?.
+        /// </summary>
+        public static string LogChapterParserException_AskForNext {
+            get {
+                return ResourceManager.GetString("LogChapterParserException_AskForNext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to EPUB creation file ended..
         /// </summary>
         public static string LogClosingEpubFile {
@@ -205,6 +214,15 @@ namespace LightNovelSniffer.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The chapter {0} doesn&apos;t seems to exist..
+        /// </summary>
+        public static string LogNotExistingChapter {
+            get {
+                return ResourceManager.GetString("LogNotExistingChapter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating EPUB file..
         /// </summary>
         public static string LogOpeningEpubFile {
@@ -232,7 +250,7 @@ namespace LightNovelSniffer.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file Config.xml cannot be read..
+        ///   Looks up a localized string similar to The config file {0} cannot be read..
         /// </summary>
         public static string UnableToReadConfigFileExceptionMessage {
             get {
@@ -241,7 +259,7 @@ namespace LightNovelSniffer.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file LightNovels.xml cannot be read..
+        ///   Looks up a localized string similar to The lightNovels file {0} cannot be read..
         /// </summary>
         public static string UnableToReadLightNovelsFileExceptionMessage {
             get {
