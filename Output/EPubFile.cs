@@ -40,7 +40,6 @@ namespace LightNovelSniffer.Output
         {
             try
             {
-
                 byte[] cover = WebCrawler.DownloadCover(lnParameters.urlCover);
                 if (cover != null && cover.Length > 0)
                 {
@@ -51,8 +50,7 @@ namespace LightNovelSniffer.Output
                     epub.AddImageData("." + coverFilename, cover);
                     epub.AddMetaItem(".cover", coverFilename);
                 }
-            }
-            catch (CoverException e)
+            } catch (CoverException e)
             {}
         }
 

@@ -66,7 +66,6 @@ namespace LightNovelSniffer.Web
                     {
                         if (((HttpWebResponse)e.Response).StatusCode == HttpStatusCode.NotFound)
                             throw new NotExistingChapterException();
-                        throw;
                     }
 
                     HtmlDocument page = new HtmlDocument();
@@ -90,7 +89,7 @@ namespace LightNovelSniffer.Web
                     if (    (!Globale.INTERACTIVE_MODE && chapterOnErrorCountBeforeStop > Globale.MAX_CHAPTER_ON_ERROR_COUNT_BEFORE_STOP) 
                             || (Globale.INTERACTIVE_MODE && !input.Ask(string.Format(LightNovelSniffer_Strings.LogChapterDoesntExist_AskForNext,i))))
                         break;
-                } catch (WebException e)
+                } catch (System.Exception e)
                 {
                     if (!Globale.INTERACTIVE_MODE)
                         output.Log(string.Format(LightNovelSniffer_Strings.LogErrorProcessingUrlByParser, string.Format(baseUrl, i), parser.GetType()));
@@ -124,7 +123,6 @@ namespace LightNovelSniffer.Web
 
         public static byte[] DownloadCover(string urlCover)
         {
-            return new byte[0];
             using (WebClient client = new WebClient())
             {
                 try
